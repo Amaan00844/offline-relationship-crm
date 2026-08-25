@@ -11,9 +11,8 @@ import {
   Layers,
   CheckCircle2,
   Loader2,
-  ShieldCheck,
-  Bot,
-  Activity
+  GitMerge,
+  Bot
 } from 'lucide-react';
 
 interface Props {
@@ -42,66 +41,65 @@ export const Header: React.FC<Props> = ({
     stats
   } = useCRM();
 
-  const tracks: { label: string; value: ProgramTrack | 'All'; badgeClass?: string }[] = [
-    { label: 'All Cohorts', value: 'All' },
-    { label: 'Offline Core', value: 'Offline Core', badgeClass: 'text-amber-400' },
-    { label: 'Encore (Execs)', value: 'Encore', badgeClass: 'text-purple-400' },
-    { label: 'TON (Network)', value: 'The Offline Network (TON)', badgeClass: 'text-emerald-400' }
+  const tracks: { label: string; value: ProgramTrack | 'All'; badgeColor: string }[] = [
+    { label: 'All Cohorts', value: 'All', badgeColor: 'text-slate-400' },
+    { label: 'Offline Core', value: 'Offline Core', badgeColor: 'text-amber-300' },
+    { label: 'Encore', value: 'Encore', badgeColor: 'text-purple-300' },
+    { label: 'TON (Network)', value: 'The Offline Network (TON)', badgeColor: 'text-emerald-300' }
   ];
 
   const hasNvidiaKey = Boolean(nvidiaConfig.nvidiaApiKey || import.meta.env.VITE_NVIDIA_API_KEY);
 
   return (
-    <header className="sticky top-0 z-40 bg-[#06080D]/85 backdrop-blur-2xl border-b border-white/[0.08]">
+    <header className="sticky top-0 z-40 bg-[#06080D]/90 backdrop-blur-2xl border-b border-white/[0.08]">
       {/* Top Banner for Active Tasks */}
       {isProcessing && (
-        <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-indigo-600 px-4 py-1.5 text-xs text-black font-bold flex items-center justify-center gap-2 animate-pulse shadow-lg">
+        <div className="bg-gradient-to-r from-emerald-600/95 via-teal-600/95 to-indigo-600/95 px-4 py-1.5 text-xs text-white flex items-center justify-center gap-2 font-medium animate-pulse shadow-md">
           <Loader2 className="w-3.5 h-3.5 animate-spin" />
-          <span>{activeProcessingTask || 'Executing NVIDIA NIM AI relationship pipeline...'}</span>
+          <span className="font-mono text-[11px] tracking-wide">
+            {activeProcessingTask || 'Executing NVIDIA AI relationship pipeline...'}
+          </span>
         </div>
       )}
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5">
         <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-          {/* Logo & Subtitle */}
+          {/* Logo & Brand Identity */}
           <div className="flex items-center gap-3.5">
-            <div className="w-11 h-11 rounded-2xl bg-gradient-to-br from-amber-400/80 via-emerald-500/80 to-indigo-500/80 p-0.5 shadow-xl shadow-amber-500/10">
-              <div className="w-full h-full bg-[#080B11] rounded-[14px] flex items-center justify-center">
-                <span className="font-mono font-black text-transparent bg-clip-text bg-gradient-to-br from-amber-300 to-emerald-400 text-xl tracking-tighter">
+            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-400/20 via-emerald-400/20 to-purple-400/20 p-px border border-white/10 shadow-lg shadow-black/60">
+              <div className="w-full h-full bg-[#080B11] rounded-[11px] flex items-center justify-center">
+                <span className="font-mono font-black text-transparent bg-clip-text bg-gradient-to-r from-amber-200 via-emerald-300 to-teal-200 text-lg">
                   Ø
                 </span>
               </div>
             </div>
             <div>
-              <div className="flex items-center gap-2.5">
-                <h1 className="text-base font-extrabold tracking-tight text-white font-mono flex items-center gap-1.5">
-                  <span>OFFLINE</span>
-                  <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 tracking-wider">
-                    FOUNDER'S OS
-                  </span>
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm font-extrabold tracking-tight text-white font-mono flex items-center gap-1.5">
+                  OFFLINE <span className="text-[10px] font-sans font-bold px-2 py-0.5 rounded-full bg-emerald-950/90 border border-emerald-500/30 text-emerald-300 tracking-wider">RELATIONSHIP OS</span>
                 </h1>
               </div>
               <p className="text-[11px] text-slate-400 flex items-center gap-2 mt-0.5">
-                <span className="text-slate-300 font-medium">Relationship Intelligence Engine</span>
+                <span>Founder's Office Intelligence</span>
                 <span className="text-slate-600">•</span>
-                <span className="text-slate-400">Offline • Encore • TON</span>
+                <span className="text-slate-400">Offline & Encore & TON</span>
               </p>
             </div>
           </div>
 
-          {/* Program Track Filter Buttons */}
-          <div className="flex items-center p-1 bg-slate-900/90 rounded-2xl border border-white/[0.08] self-start lg:self-auto overflow-x-auto max-w-full shadow-inner">
-            {tracks.map(track => (
+          {/* Program Cohort Switcher */}
+          <div className="flex items-center p-1 bg-[#0B0F17] rounded-xl border border-white/[0.08] self-start lg:self-auto overflow-x-auto max-w-full shadow-inner">
+            {tracks.map(t => (
               <button
-                key={track.value}
-                onClick={() => setSelectedTrack(track.value)}
-                className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
-                  selectedTrack === track.value
-                    ? 'bg-slate-800 text-white shadow-md border border-white/10 ring-1 ring-white/5'
-                    : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
+                key={t.value}
+                onClick={() => setSelectedTrack(t.value)}
+                className={`px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap transition-all duration-200 ${
+                  selectedTrack === t.value
+                    ? 'bg-gradient-to-r from-emerald-500/20 to-teal-500/20 text-emerald-300 border border-emerald-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
                 }`}
               >
-                {track.label}
+                {t.label}
               </button>
             ))}
           </div>
@@ -111,35 +109,35 @@ export const Header: React.FC<Props> = ({
             {/* NVIDIA NIM Status Pill */}
             <button
               onClick={onOpenAISettings}
-              className={`flex items-center gap-2 px-3 py-1.5 rounded-xl border text-xs font-medium transition shadow-sm ${
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-medium transition-all duration-200 ${
                 hasNvidiaKey
-                  ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/40'
-                  : 'bg-slate-900 border-slate-700 text-slate-300 hover:border-emerald-500/50'
+                  ? 'bg-emerald-950/40 border-emerald-500/40 text-emerald-300 hover:bg-emerald-900/40 hover:border-emerald-500/60 shadow-sm shadow-emerald-500/10'
+                  : 'bg-[#0B0F17] border-white/10 text-slate-300 hover:border-emerald-500/40'
               }`}
-              title="Configure NVIDIA NIM API Key"
+              title="Configure NVIDIA NIM API Inference Key"
             >
               <Cpu className="w-3.5 h-3.5 text-emerald-400" />
               <span className="font-mono text-[11px] font-semibold">
-                {hasNvidiaKey ? 'NVIDIA NIM 70B' : 'Set NVIDIA Key'}
+                {hasNvidiaKey ? 'NVIDIA Llama 3.3 70B' : 'Configure NVIDIA Key'}
               </span>
-              <span className={`w-2 h-2 rounded-full ${hasNvidiaKey ? 'bg-emerald-400 shadow-[0_0_8px_#10B981] animate-pulse' : 'bg-amber-400'}`}></span>
+              <span className={`w-1.5 h-1.5 rounded-full ${hasNvidiaKey ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
             </button>
 
             {/* Ingest Applicant Button */}
             <button
               onClick={onOpenNewApplicant}
-              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-indigo-600 to-indigo-700 hover:from-indigo-500 hover:to-indigo-600 text-white text-xs font-bold shadow-lg shadow-indigo-600/25 transition active:scale-95 border border-indigo-400/30"
+              className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-gradient-to-r from-emerald-500 to-teal-600 hover:from-emerald-400 hover:to-teal-500 text-slate-950 text-xs font-bold shadow-md shadow-emerald-500/20 transition active:scale-95"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>+ Ingest Form</span>
             </button>
 
             {/* Batch AI Automation Quick triggers */}
-            <div className="flex items-center gap-1 bg-slate-900/90 border border-white/[0.08] rounded-xl p-0.5">
+            <div className="flex items-center gap-1 bg-[#0B0F17] border border-white/[0.08] rounded-xl p-1 shadow-sm">
               <button
                 onClick={() => enrichAllPending()}
                 disabled={isProcessing}
-                className="px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition flex items-center gap-1 disabled:opacity-50"
+                className="px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-white/[0.06] rounded-lg transition flex items-center gap-1 disabled:opacity-50"
                 title="Run NVIDIA AI auto-enrichment on all incomplete records"
               >
                 <Sparkles className="w-3 h-3 text-purple-400" />
@@ -148,7 +146,7 @@ export const Header: React.FC<Props> = ({
               <button
                 onClick={() => scoreAllUnscored()}
                 disabled={isProcessing}
-                className="px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-slate-800 rounded-lg transition flex items-center gap-1 disabled:opacity-50"
+                className="px-2.5 py-1 text-[11px] font-semibold text-slate-300 hover:text-white hover:bg-white/[0.06] rounded-lg transition flex items-center gap-1 disabled:opacity-50"
                 title="Calculate NVIDIA AI multi-factor fit score for all applicants"
               >
                 <Zap className="w-3 h-3 text-amber-400" />
@@ -159,7 +157,7 @@ export const Header: React.FC<Props> = ({
             {/* Export & Reset */}
             <button
               onClick={() => exportData('csv')}
-              className="p-2 rounded-xl bg-slate-900/80 border border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+              className="p-2 rounded-xl bg-[#0B0F17] border border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition"
               title="Export CRM to Airtable CSV"
             >
               <Download className="w-3.5 h-3.5" />
@@ -167,7 +165,7 @@ export const Header: React.FC<Props> = ({
 
             <button
               onClick={resetToSeedData}
-              className="p-2 rounded-xl bg-slate-900/80 border border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-slate-800 transition"
+              className="p-2 rounded-xl bg-[#0B0F17] border border-white/[0.08] text-slate-400 hover:text-slate-200 hover:bg-white/[0.06] transition"
               title="Reset to Initial Seed Dataset"
             >
               <RotateCcw className="w-3.5 h-3.5" />
@@ -179,31 +177,31 @@ export const Header: React.FC<Props> = ({
         <div className="flex items-center gap-2 mt-4 border-t border-white/[0.06] pt-2.5 overflow-x-auto">
           <button
             onClick={() => setActiveTab('roster')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
               activeTab === 'roster'
-                ? 'bg-slate-800 text-white border border-white/10 shadow-lg'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
             <Layers className="w-3.5 h-3.5 text-indigo-400" />
             <span>Network & Pipeline</span>
-            <span className="px-2 py-0.5 bg-slate-700/60 text-slate-300 text-[10px] font-mono rounded-full">
+            <span className="px-1.5 py-0.2 bg-slate-800 text-slate-300 text-[10px] rounded-full font-mono">
               {stats.totalProfiles}
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('duplicates')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
               activeTab === 'duplicates'
-                ? 'bg-slate-800 text-white border border-white/10 shadow-lg'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
-            <span className="w-2 h-2 rounded-full bg-amber-400"></span>
+            <GitMerge className="w-3.5 h-3.5 text-amber-400" />
             <span>Duplicate & Quality Studio</span>
             {stats.duplicatesDetected > 0 && (
-              <span className="px-2 py-0.5 bg-amber-950/90 border border-amber-500/40 text-amber-300 text-[10px] font-mono font-bold rounded-full animate-pulse">
+              <span className="px-1.5 py-0.2 bg-amber-950/80 border border-amber-500/40 text-amber-300 text-[10px] font-bold rounded-full">
                 {stats.duplicatesDetected} alerts
               </span>
             )}
@@ -211,25 +209,25 @@ export const Header: React.FC<Props> = ({
 
           <button
             onClick={() => setActiveTab('matchmaker')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
               activeTab === 'matchmaker'
-                ? 'bg-slate-800 text-white border border-white/10 shadow-lg'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
             <span>AI Super-Connector (Intros)</span>
-            <span className="px-2 py-0.5 bg-emerald-950/90 border border-emerald-500/40 text-emerald-300 text-[10px] font-mono font-bold rounded-full">
+            <span className="px-1.5 py-0.2 bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 text-[10px] font-bold rounded-full">
               {stats.highValueMatchesAvailable} matches
             </span>
           </button>
 
           <button
             onClick={() => setActiveTab('assistant')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
               activeTab === 'assistant'
-                ? 'bg-slate-800 text-white border border-white/10 shadow-lg'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
             <Bot className="w-3.5 h-3.5 text-purple-400" />
@@ -238,10 +236,10 @@ export const Header: React.FC<Props> = ({
 
           <button
             onClick={() => setActiveTab('memo')}
-            className={`px-4 py-2 rounded-xl text-xs font-bold flex items-center gap-2 transition-all ${
+            className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition-all ${
               activeTab === 'memo'
-                ? 'bg-slate-800 text-white border border-white/10 shadow-lg'
-                : 'text-slate-400 hover:text-slate-200 hover:bg-slate-900/60'
+                ? 'bg-white/[0.08] text-white border border-white/10 shadow-sm'
+                : 'text-slate-400 hover:text-slate-200 hover:bg-white/[0.04]'
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5 text-cyan-400" />

@@ -14,7 +14,8 @@ import {
   ChevronRight,
   AlertTriangle,
   Building,
-  ArrowUpDown
+  ArrowUpDown,
+  Tag
 } from 'lucide-react';
 
 interface Props {
@@ -71,26 +72,46 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
   });
 
   const getScoreBadge = (score: number) => {
-    if (score >= 90) return 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300';
-    if (score >= 75) return 'bg-indigo-950/80 border-indigo-500/40 text-indigo-300';
-    if (score >= 50) return 'bg-amber-950/80 border-amber-500/40 text-amber-300';
-    return 'bg-rose-950/80 border-rose-500/40 text-rose-300';
+    if (score >= 90) return 'bg-emerald-950/80 border-emerald-500/50 text-emerald-300 shadow-sm shadow-emerald-500/10';
+    if (score >= 75) return 'bg-indigo-950/80 border-indigo-500/50 text-indigo-300';
+    if (score >= 50) return 'bg-amber-950/80 border-amber-500/50 text-amber-300';
+    return 'bg-rose-950/80 border-rose-500/50 text-rose-300';
+  };
+
+  const getStageBadge = (stage: string) => {
+    switch (stage) {
+      case 'Seed':
+        return 'bg-cyan-950/70 border-cyan-500/30 text-cyan-300';
+      case 'Series A':
+        return 'bg-emerald-950/70 border-emerald-500/30 text-emerald-300';
+      case 'Series B+':
+        return 'bg-purple-950/70 border-purple-500/30 text-purple-300';
+      case 'Bootstrapped':
+        return 'bg-amber-950/70 border-amber-500/30 text-amber-300';
+      case 'Public/Exited':
+        return 'bg-gold-950/70 border-amber-400/40 text-amber-200';
+      default:
+        return 'bg-slate-800 border-slate-700 text-slate-300';
+    }
   };
 
   return (
     <div className="space-y-4">
-      {/* Control Bar */}
-      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-3.5 rounded-2xl bg-slate-900/70 border border-slate-800">
-        {/* Search */}
+      {/* Control & Search Bar */}
+      <div className="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-3 p-4 rounded-2xl luxury-card">
+        {/* Search Input with Hotkey badge */}
         <div className="relative flex-1">
           <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
           <input
             type="text"
             value={localSearch}
             onChange={e => setLocalSearch(e.target.value)}
-            placeholder="Search by founder, company, domain, backing (e.g. 'YC', 'DevTools', 'Stripe')..."
-            className="w-full pl-10 pr-4 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500"
+            placeholder="Search by founder, company, domain, backing (e.g. 'YC', 'DevTools', 'Stripe', 'Benchmark')..."
+            className="w-full pl-10 pr-12 py-2.5 rounded-xl bg-[#090C12] border border-white/[0.08] text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition"
           />
+          <kbd className="hidden sm:inline-block absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono text-slate-500 px-1.5 py-0.5 rounded bg-white/[0.04] border border-white/[0.06]">
+            ⌘K
+          </kbd>
         </div>
 
         {/* Filter Controls */}
@@ -99,12 +120,12 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
           <select
             value={selectedDomain}
             onChange={e => setSelectedDomain(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="px-3.5 py-2.5 rounded-xl bg-[#090C12] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-emerald-500/50 font-medium"
           >
-            <option value="All">All Domains</option>
+            <option value="All">All Domains ({allDomains.length})</option>
             {allDomains.map(d => (
               <option key={d} value={d}>
-                {d}
+                #{d}
               </option>
             ))}
           </select>
@@ -113,13 +134,13 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
           <select
             value={statusFilter}
             onChange={e => setStatusFilter(e.target.value)}
-            className="px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="px-3.5 py-2.5 rounded-xl bg-[#090C12] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-emerald-500/50 font-medium"
           >
             <option value="All">All Statuses</option>
             <option value="Accepted">Accepted Members</option>
-            <option value="Scored">Scored (Ready for Review)</option>
+            <option value="Scored">Scored (In Review)</option>
             <option value="Enriched">Enriched</option>
-            <option value="Raw">Raw Applicants</option>
+            <option value="Raw">Raw Ingestion</option>
             <option value="Duplicates">Duplicate Alerts</option>
             <option value="Declined">Declined</option>
           </select>
@@ -128,20 +149,20 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
           <select
             value={sortBy}
             onChange={e => setSortBy(e.target.value as any)}
-            className="px-3 py-2 rounded-xl bg-slate-950/80 border border-slate-800 text-xs text-slate-200 focus:outline-none focus:border-indigo-500"
+            className="px-3.5 py-2.5 rounded-xl bg-[#090C12] border border-white/[0.08] text-xs text-slate-200 focus:outline-none focus:border-emerald-500/50 font-medium"
           >
             <option value="fit">Sort: Fit Score (High to Low)</option>
-            <option value="completeness">Sort: Completeness</option>
+            <option value="completeness">Sort: Data Health</option>
             <option value="date">Sort: Newest First</option>
-            <option value="name">Sort: Name</option>
+            <option value="name">Sort: Alphabetical</option>
           </select>
 
-          {/* View Toggle */}
-          <div className="flex items-center p-0.5 rounded-xl bg-slate-950 border border-slate-800">
+          {/* View Mode Toggle */}
+          <div className="flex items-center p-1 rounded-xl bg-[#090C12] border border-white/[0.08] shadow-inner">
             <button
               onClick={() => setViewMode('table')}
               className={`p-1.5 rounded-lg transition ${
-                viewMode === 'table' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'
+                viewMode === 'table' ? 'bg-white/[0.1] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Table View"
             >
@@ -150,7 +171,7 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
             <button
               onClick={() => setViewMode('kanban')}
               className={`p-1.5 rounded-lg transition ${
-                viewMode === 'kanban' ? 'bg-slate-800 text-white' : 'text-slate-400 hover:text-slate-200'
+                viewMode === 'kanban' ? 'bg-white/[0.1] text-white shadow-sm' : 'text-slate-400 hover:text-slate-200'
               }`}
               title="Pipeline Kanban View"
             >
@@ -162,24 +183,24 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
 
       {/* View Rendering */}
       {viewMode === 'table' ? (
-        <div className="rounded-2xl bg-slate-900/60 border border-slate-800 overflow-hidden shadow-xl">
+        <div className="rounded-2xl luxury-card overflow-hidden shadow-2xl">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-xs text-slate-300">
-              <thead className="bg-slate-950/80 border-b border-slate-800 text-[11px] uppercase tracking-wider text-slate-400 font-semibold">
+              <thead className="bg-[#080B11]/90 border-b border-white/[0.08] text-[11px] uppercase tracking-wider text-slate-400 font-bold">
                 <tr>
-                  <th className="py-3 px-4">Member / Applicant</th>
-                  <th className="py-3 px-4">Role & Stage</th>
-                  <th className="py-3 px-4">Program Track</th>
-                  <th className="py-3 px-4 text-center">Fit Score</th>
-                  <th className="py-3 px-4">Core Asks & Gives</th>
-                  <th className="py-3 px-4">Status & Quality</th>
-                  <th className="py-3 px-4 text-right">Action</th>
+                  <th className="py-3.5 px-4">Member / Founder</th>
+                  <th className="py-3.5 px-4">Role & Stage</th>
+                  <th className="py-3.5 px-4">Program Track</th>
+                  <th className="py-3.5 px-4 text-center">Fit Score</th>
+                  <th className="py-3.5 px-4">Core Asks & Gives</th>
+                  <th className="py-3.5 px-4">Quality & Status</th>
+                  <th className="py-3.5 px-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-800/60">
+              <tbody className="divide-y divide-white/[0.04]">
                 {filteredMembers.length === 0 ? (
                   <tr>
-                    <td colSpan={7} className="py-12 text-center text-slate-500">
+                    <td colSpan={7} className="py-16 text-center text-slate-500">
                       No records match the current filters.
                     </td>
                   </tr>
@@ -188,34 +209,34 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                     <tr
                       key={member.id}
                       onClick={() => onSelectMember(member)}
-                      className={`hover:bg-slate-800/40 transition cursor-pointer ${
-                        member.isDuplicate ? 'bg-rose-950/10' : ''
+                      className={`hover:bg-white/[0.04] transition-all duration-150 cursor-pointer ${
+                        member.isDuplicate ? 'bg-rose-950/15 border-l-2 border-rose-500' : ''
                       }`}
                     >
                       {/* Column 1: Member Info */}
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4">
                         <div className="flex items-center gap-3">
                           {member.avatarUrl ? (
                             <img
                               src={member.avatarUrl}
                               alt={member.name}
-                              className="w-9 h-9 rounded-xl object-cover border border-slate-700"
+                              className="w-10 h-10 rounded-xl object-cover border border-white/10 shadow-sm"
                             />
                           ) : (
-                            <div className="w-9 h-9 rounded-xl bg-indigo-600/20 border border-indigo-500/30 text-indigo-300 font-bold flex items-center justify-center text-xs">
+                            <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-emerald-500/20 to-indigo-500/20 border border-white/10 text-emerald-300 font-bold flex items-center justify-center text-xs">
                               {member.name.slice(0, 2).toUpperCase()}
                             </div>
                           )}
                           <div>
-                            <div className="font-bold text-white flex items-center gap-1.5">
+                            <div className="font-bold text-white flex items-center gap-1.5 text-sm">
                               <span>{member.name}</span>
                               {member.isDuplicate && (
                                 <span className="text-[9px] font-bold px-1.5 py-0.2 rounded bg-rose-950 border border-rose-500/40 text-rose-300">
-                                  DUP
+                                  DUPLICATE
                                 </span>
                               )}
                             </div>
-                            <div className="text-[11px] text-slate-400 truncate max-w-[180px]">
+                            <div className="text-[11px] text-slate-400 truncate max-w-[180px] font-mono">
                               {member.email}
                             </div>
                           </div>
@@ -223,26 +244,26 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                       </td>
 
                       {/* Column 2: Role & Stage */}
-                      <td className="py-3 px-4">
-                        <div className="font-medium text-slate-200">{member.standardizedRole}</div>
-                        <div className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                          <span className="text-white font-semibold">{member.company}</span>
+                      <td className="py-3.5 px-4">
+                        <div className="font-semibold text-slate-200">{member.standardizedRole}</div>
+                        <div className="text-[11px] text-slate-400 flex items-center gap-1.5 mt-0.5">
+                          <span className="text-white font-medium">{member.company}</span>
                           <span className="text-slate-600">•</span>
-                          <span className="font-mono text-[10px] text-indigo-300">
+                          <span className={`font-mono text-[10px] px-2 py-0.2 rounded-full border ${getStageBadge(member.companyStage)}`}>
                             {member.companyStage}
                           </span>
                         </div>
                       </td>
 
                       {/* Column 3: Program Track */}
-                      <td className="py-3 px-4">
+                      <td className="py-3.5 px-4">
                         <span
-                          className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
+                          className={`inline-block px-2.5 py-1 rounded-full text-[10px] font-bold border ${
                             member.programTrack === 'Offline Core'
-                              ? 'bg-indigo-950/70 border-indigo-500/30 text-indigo-300'
+                              ? 'bg-amber-950/70 border-amber-500/40 text-amber-300'
                               : member.programTrack === 'Encore'
-                              ? 'bg-purple-950/70 border-purple-500/30 text-purple-300'
-                              : 'bg-emerald-950/70 border-emerald-500/30 text-emerald-300'
+                              ? 'bg-purple-950/70 border-purple-500/40 text-purple-300'
+                              : 'bg-emerald-950/70 border-emerald-500/40 text-emerald-300'
                           }`}
                         >
                           {member.programTrack}
@@ -250,35 +271,35 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                       </td>
 
                       {/* Column 4: Fit Score */}
-                      <td className="py-3 px-4 text-center">
+                      <td className="py-3.5 px-4 text-center">
                         <div className="inline-flex flex-col items-center">
                           <span
-                            className={`px-2.5 py-0.5 rounded-lg font-mono font-bold text-xs border ${getScoreBadge(
+                            className={`px-2.5 py-1 rounded-xl font-mono font-black text-xs border ${getScoreBadge(
                               member.fitScore?.overall || 0
                             )}`}
                           >
                             {member.fitScore?.overall || '--'}
                           </span>
-                          <span className="text-[9px] text-slate-400 mt-0.5 truncate max-w-[90px]">
+                          <span className="text-[9px] text-slate-400 mt-1 truncate max-w-[95px] font-medium">
                             {member.fitScore?.actionRecommendation?.split(' ')[0] || ''}
                           </span>
                         </div>
                       </td>
 
                       {/* Column 5: Gives / Asks */}
-                      <td className="py-3 px-4 max-w-xs">
-                        <div className="space-y-1">
+                      <td className="py-3.5 px-4 max-w-xs">
+                        <div className="space-y-1.5">
                           {member.gives && member.gives.length > 0 && (
-                            <div className="text-[11px] text-emerald-400/90 truncate flex items-center gap-1">
-                              <span className="font-bold text-[9px] px-1 rounded bg-emerald-950 border border-emerald-500/30 text-emerald-300">
+                            <div className="text-[11px] text-emerald-300/90 truncate flex items-center gap-1.5">
+                              <span className="font-bold text-[9px] px-1.5 py-0.2 rounded bg-emerald-950/90 border border-emerald-500/30 text-emerald-400">
                                 GIVE
                               </span>
                               <span className="truncate">{member.gives[0]}</span>
                             </div>
                           )}
                           {member.asks && member.asks.length > 0 && (
-                            <div className="text-[11px] text-amber-400/90 truncate flex items-center gap-1">
-                              <span className="font-bold text-[9px] px-1 rounded bg-amber-950 border border-amber-500/30 text-amber-300">
+                            <div className="text-[11px] text-amber-300/90 truncate flex items-center gap-1.5">
+                              <span className="font-bold text-[9px] px-1.5 py-0.2 rounded bg-amber-950/90 border border-amber-500/30 text-amber-400">
                                 ASK
                               </span>
                               <span className="truncate">{member.asks[0]}</span>
@@ -288,27 +309,27 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                       </td>
 
                       {/* Column 6: Status & Completeness */}
-                      <td className="py-3 px-4">
-                        <div className="space-y-1">
+                      <td className="py-3.5 px-4">
+                        <div className="space-y-1.5">
                           <span
-                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                            className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full border ${
                               member.status === 'Accepted'
-                                ? 'bg-emerald-950 border-emerald-500/40 text-emerald-300'
+                                ? 'bg-emerald-950/80 border-emerald-500/40 text-emerald-300'
                                 : member.status === 'Declined'
-                                ? 'bg-rose-950 border-rose-500/40 text-rose-300'
+                                ? 'bg-rose-950/80 border-rose-500/40 text-rose-300'
                                 : member.status === 'Scored'
-                                ? 'bg-indigo-950 border-indigo-500/40 text-indigo-300'
+                                ? 'bg-indigo-950/80 border-indigo-500/40 text-indigo-300'
                                 : 'bg-slate-800 border-slate-700 text-slate-300'
                             }`}
                           >
-                            {member.status}
+                            ● {member.status}
                           </span>
                           <div className="flex items-center gap-1.5 text-[10px] text-slate-400">
                             <span>Health:</span>
                             <div className="w-12 h-1.5 rounded-full bg-slate-800 overflow-hidden">
                               <div
                                 className={`h-full ${
-                                  member.completenessScore >= 80 ? 'bg-emerald-500' : 'bg-amber-500'
+                                  member.completenessScore >= 80 ? 'bg-emerald-400' : 'bg-amber-400'
                                 }`}
                                 style={{ width: `${member.completenessScore}%` }}
                               />
@@ -319,7 +340,7 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                       </td>
 
                       {/* Column 7: Actions */}
-                      <td className="py-3 px-4 text-right">
+                      <td className="py-3.5 px-4 text-right">
                         <div
                           className="flex items-center justify-end gap-1.5"
                           onClick={e => e.stopPropagation()}
@@ -327,7 +348,7 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                           {member.isDuplicate && member.duplicateGroupId ? (
                             <button
                               onClick={() => onOpenMerge(member.duplicateGroupId!)}
-                              className="px-2.5 py-1 rounded-md bg-amber-950/80 border border-amber-500/50 text-amber-300 text-[10px] font-bold hover:bg-amber-900 transition"
+                              className="px-3 py-1.5 rounded-lg bg-amber-950/90 border border-amber-500/50 text-amber-300 text-[11px] font-bold hover:bg-amber-900 transition shadow-sm"
                             >
                               Merge
                             </button>
@@ -336,7 +357,7 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                               {member.status !== 'Accepted' && (
                                 <button
                                   onClick={() => acceptApplicant(member.id)}
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-emerald-950 text-slate-400 hover:text-emerald-400 transition"
+                                  className="p-2 rounded-xl bg-white/[0.04] hover:bg-emerald-950 text-slate-400 hover:text-emerald-400 border border-white/[0.08] transition"
                                   title="Accept Member"
                                 >
                                   <CheckCircle2 className="w-4 h-4" />
@@ -344,7 +365,7 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                               )}
                               <button
                                 onClick={() => onSelectMember(member)}
-                                className="p-1.5 rounded-lg bg-slate-800 hover:bg-indigo-950 text-slate-400 hover:text-indigo-400 transition"
+                                className="p-2 rounded-xl bg-white/[0.04] hover:bg-indigo-950 text-slate-400 hover:text-indigo-400 border border-white/[0.08] transition"
                                 title="View Member Details"
                               >
                                 <ChevronRight className="w-4 h-4" />
@@ -364,17 +385,17 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
         /* Kanban Pipeline View */
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
           {[
-            { title: '1. Raw Ingestion', statuses: ['Raw'], color: 'border-slate-700' },
-            { title: '2. Cleaned & Enriched', statuses: ['Cleaned', 'Enriched'], color: 'border-indigo-500/30' },
-            { title: '3. Scored & In Review', statuses: ['Scored'], color: 'border-amber-500/30' },
-            { title: '4. Admitted Members', statuses: ['Accepted'], color: 'border-emerald-500/30' }
+            { title: '1. Raw Ingestion', statuses: ['Raw'], badgeColor: 'bg-slate-800' },
+            { title: '2. Enriched & Tagged', statuses: ['Cleaned', 'Enriched'], badgeColor: 'bg-purple-950 text-purple-300 border border-purple-500/30' },
+            { title: '3. Scored & In Review', statuses: ['Scored'], badgeColor: 'bg-amber-950 text-amber-300 border border-amber-500/30' },
+            { title: '4. Admitted Members', statuses: ['Accepted'], badgeColor: 'bg-emerald-950 text-emerald-300 border border-emerald-500/30' }
           ].map(col => {
             const colMembers = filteredMembers.filter(m => col.statuses.includes(m.status));
             return (
-              <div key={col.title} className="p-3.5 rounded-2xl bg-slate-900/50 border border-slate-800 space-y-3">
-                <div className="flex items-center justify-between pb-2 border-b border-slate-800">
-                  <span className="text-xs font-bold text-slate-200">{col.title}</span>
-                  <span className="px-2 py-0.5 rounded-full bg-slate-800 text-[10px] font-mono text-slate-300">
+              <div key={col.title} className="p-4 rounded-2xl luxury-card space-y-3">
+                <div className="flex items-center justify-between pb-2 border-b border-white/[0.08]">
+                  <span className="text-xs font-bold text-white tracking-wide">{col.title}</span>
+                  <span className={`px-2 py-0.5 rounded-full text-[10px] font-mono font-bold ${col.badgeColor}`}>
                     {colMembers.length}
                   </span>
                 </div>
@@ -384,14 +405,14 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                     <div
                       key={member.id}
                       onClick={() => onSelectMember(member)}
-                      className="p-3 rounded-xl bg-slate-950/80 border border-slate-800 hover:border-indigo-500/40 transition cursor-pointer space-y-2 shadow-sm"
+                      className="p-3.5 rounded-xl bg-[#090C12] border border-white/[0.08] hover:border-emerald-500/40 transition-all duration-150 cursor-pointer space-y-2.5 shadow-sm"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="font-bold text-xs text-white leading-tight">
                           {member.name}
                         </div>
                         <span
-                          className={`px-1.5 py-0.2 rounded font-mono text-[10px] font-bold border ${getScoreBadge(
+                          className={`px-2 py-0.5 rounded-lg font-mono text-[10px] font-black border ${getScoreBadge(
                             member.fitScore?.overall || 0
                           )}`}
                         >
@@ -400,12 +421,12 @@ export const NetworkRosterTab: React.FC<Props> = ({ onSelectMember, onOpenMerge 
                       </div>
 
                       <div className="text-[11px] text-slate-400">
-                        {member.standardizedRole} @ <span className="text-slate-200">{member.company}</span>
+                        {member.standardizedRole} @ <span className="text-slate-200 font-medium">{member.company}</span>
                       </div>
 
                       <div className="flex flex-wrap gap-1">
                         {member.domains?.slice(0, 2).map((d, i) => (
-                          <span key={i} className="text-[9px] px-1.5 py-0.2 rounded bg-slate-800 text-slate-300">
+                          <span key={i} className="text-[9px] px-2 py-0.5 rounded-md bg-white/[0.04] text-slate-300 border border-white/[0.06]">
                             #{d}
                           </span>
                         ))}
