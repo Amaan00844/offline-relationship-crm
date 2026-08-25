@@ -8,38 +8,49 @@ export default {
   theme: {
     extend: {
       colors: {
-        offline: {
-          50: '#f8fafc',
-          100: '#f1f5f9',
-          200: '#e2e8f0',
-          300: '#cbd5e1',
-          400: '#94a3b8',
-          500: '#64748b',
-          600: '#475569',
-          700: '#334155',
-          800: '#1e293b',
-          900: '#0f172a',
-          950: '#020617',
+        obsidian: {
+          950: '#04060A',
+          900: '#080B11',
+          850: '#0C1018',
+          800: '#111723',
+          750: '#172030',
+          700: '#1F2A3F',
+          600: '#334155',
+          500: '#64748B',
+          400: '#94A3B8',
+          300: '#CBD5E1',
+          200: '#E2E8F0',
+          100: '#F8FAFC'
         },
-        brand: {
+        club: {
           gold: '#E5C07B',
-          amber: '#F59E0B',
+          goldDark: '#D4AF37',
+          goldMuted: 'rgba(229, 192, 123, 0.15)',
           emerald: '#10B981',
+          emeraldMuted: 'rgba(16, 185, 129, 0.15)',
           violet: '#8B5CF6',
+          violetMuted: 'rgba(139, 92, 246, 0.15)',
           cyan: '#06B6D4',
           rose: '#F43F5E',
           accent: '#6366F1'
         }
       },
       fontFamily: {
-        sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'Roboto', 'sans-serif'],
+        sans: ['Plus Jakarta Sans', 'Inter', 'system-ui', '-apple-system', 'sans-serif'],
         mono: ['JetBrains Mono', 'Fira Code', 'monospace']
       },
       boxShadow: {
-        'glow-sm': '0 0 15px rgba(99, 102, 241, 0.15)',
-        'glow-md': '0 0 25px rgba(99, 102, 241, 0.25)',
-        'glow-emerald': '0 0 20px rgba(16, 185, 129, 0.2)',
-        'glow-amber': '0 0 20px rgba(245, 158, 11, 0.2)',
+        'luxury': '0 20px 40px -15px rgba(0, 0, 0, 0.7), 0 0 1px 1px rgba(255, 255, 255, 0.08)',
+        'luxury-hover': '0 25px 50px -12px rgba(0, 0, 0, 0.85), 0 0 20px 2px rgba(99, 102, 241, 0.15)',
+        'gold-glow': '0 0 25px rgba(229, 192, 123, 0.2)',
+        'emerald-glow': '0 0 25px rgba(16, 185, 129, 0.2)',
+        'violet-glow': '0 0 25px rgba(139, 92, 246, 0.2)'
+      },
+      backgroundImage: {
+        'radial-hero': 'radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.12) 0%, rgba(8, 11, 17, 0) 70%)',
+        'radial-gold': 'radial-gradient(circle at 100% 0%, rgba(229, 192, 123, 0.08) 0%, rgba(8, 11, 17, 0) 60%)',
+        'card-gradient': 'linear-gradient(180deg, rgba(17, 23, 35, 0.7) 0%, rgba(12, 16, 24, 0.8) 100%)',
+        'luxury-border': 'linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.03) 100%)'
       }
     },
   },
